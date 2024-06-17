@@ -36,6 +36,7 @@ def clean_df(df, background_df=None):
 
     ## This script contains a bare minimum working example
     # Create new variable with age
+    # this is a test
     df["age"] = 2024 - df["birthyear_bg"]
 
     # Imputing missing values in age with the mean
