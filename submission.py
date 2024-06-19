@@ -19,6 +19,7 @@ run.py can be used to test your submission.
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 import joblib
+from sklearn.compose import make_column_selector as selector
 
 
 def clean_df(df, background_df=None):
@@ -37,19 +38,30 @@ def clean_df(df, background_df=None):
     ## This script contains a bare minimum working example
     # Create new variable with age
     # this is a test
-    df["age"] = 2024 - df["birthyear_bg"]
+    # df["age"] = 2024 - df["birthyear_bg"]
 
-    # Imputing missing values in age with the mean
-    df["age"] = df["age"].fillna(df["age"].mean())
+    # # Imputing missing values in age with the mean
+    # df["age"] = df["age"].fillna(df["age"].mean())
 
-    # Selecting variables for modelling
-    keepcols = [
-        "nomem_encr",  # ID variable required for predictions,
-        "age"          # newly created variable
-    ] 
+    # # Selecting variables for modelling
+    # keepcols = [
+    #     "nomem_encr",  # ID variable required for predictions,
+    #     "age"          # newly created variable
+    # ] 
 
-    # Keeping data with variables selected
-    df = df[keepcols]
+    # # Keeping data with variables selected
+    # df = df[keepcols]
+    
+    
+    variable_selection = ['nomem_encr','cf20m003','cf20m004', 'cf20m007','nettohh_f_2020','cf20m128',
+                      'ch20m006','cs20m330','burgstat_2020','oplmet_2020','sted_2020','woonvorm_2020','birthyear_bg']
+
+    df = df[variable_selection]
+    filterNA = df.isna()
+
+
+    # replace with value
+    df[filterNA] = -99
 
     return df
 
@@ -90,7 +102,7 @@ def predict_outcomes(df, background_df=None, model_path="model.joblib"):
 
     # Generate predictions from model, should be 0 (no child) or 1 (had child)
     predictions = model.predict(df[vars_without_id])
-
+    
     # Output file should be DataFrame with two columns, nomem_encr and predictions
     df_predict = pd.DataFrame(
         {"nomem_encr": df["nomem_encr"], "prediction": predictions}
