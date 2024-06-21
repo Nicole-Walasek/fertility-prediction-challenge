@@ -19,8 +19,7 @@ from sklearn.utils import resample
 import random
 import submission
 from sklearn.metrics import precision_recall_fscore_support
-import numpy as np
-import string
+import variable_selection
 
 def train_save_model(df, target):
     """
@@ -47,35 +46,13 @@ def train_save_model(df, target):
     
     # my model pipeline
     numerical_columns_selector = selector(dtype_exclude=object)
-
-    lowercase_alphabet = string.ascii_lowercase
-    num_list = np.concatenate((np.arange(7, 14), np.arange(15, 21)))
-    healthRange = ['ch0%s%s004' % (num, letter) if num < 10 else 'ch%s%s004' % (num, letter) for num, letter in
-                   zip(num_list, lowercase_alphabet[0:21 - 8])]  # ch07a004 ch20m004
-    # this one is categorical:
-    religiousRange = ['cr0%s%s012' % (num, letter) if num < 10 else 'cr%s%s012' % (num, letter) for num, letter in
-                      zip(np.arange(8, 19), lowercase_alphabet[0:19 - 8])]  # cr08a012 - cr18k012
-    childrenUnderEightRange = ['cw0%s%s439' % (num, letter) if num < 10 else 'cw%s%s439' % (num, letter) for num, letter
-                               in zip(np.arange(8, 21), lowercase_alphabet[0:21 - 8])]  # cw08a439- cw20m439
-    childrenNumRange = ['cf0%s%s036' % (num, letter) if num < 10 else 'cf%s%s036' % (num, letter) for num, letter in
-                        zip(np.arange(8, 15), lowercase_alphabet[0:15 - 8])]  # cf08a036 - cf14g036
-    # this one is categorical:
-    fertilityIntRange = ['cf0%s%s128' % (num, letter) if num < 10 else 'cf%s%s128' % (num, letter) for num, letter in
-                         zip(np.arange(8, 21), lowercase_alphabet[0:21 - 8])]  # cf08a128 - cf20m128
-    fertilityNumRange = ['cf0%s%s129' % (num, letter) if num < 10 else 'cf%s%s129' % (num, letter) for num, letter in
-                         zip(np.arange(8, 21), lowercase_alphabet[0:21 - 8])]  # cf08a129 - cf20m129
-    num_list = np.concatenate((np.arange(8, 14), np.arange(15, 21)))
-    mortalityBeliefRange = ['ch0%s%s006' % (num, letter) if num < 10 else 'ch%s%s006' % (num, letter) for num, letter in
-                            zip(num_list, lowercase_alphabet[1:21 - 8])]  # ch08b006 - ch20m006
+    categorical_preprocessor = OneHotEncoder(handle_unknown="ignore")
 
     numerical_columns = numerical_columns_selector(data)
-    categorical_columns = ['woonvorm_2020', 'oplmet_2020', 'cf20m128', 'cf20m011', 'cs20m330',
-                           'burgstat_2020'] + religiousRange + fertilityIntRange
-    # domesticStatusRange+civilStatusRange+educationRange+woonvormRange
-
+    categorical_columns = variable_selection.select_categorical_var()
     numerical_columns = [col for col in numerical_columns if col not in categorical_columns]
 
-    categorical_preprocessor = OneHotEncoder(handle_unknown="ignore")
+
     numerical_preprocessor = StandardScaler()
     preprocessor = ColumnTransformer([
     ('one-hot-encoder', categorical_preprocessor, categorical_columns),
