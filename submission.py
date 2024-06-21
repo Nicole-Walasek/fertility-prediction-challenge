@@ -46,7 +46,7 @@ def clean_df(df, background_df=None):
 
 
     # replace with value
-    df[filterNA] = -99
+    df[filterNA] = -999
 
     return df
 
