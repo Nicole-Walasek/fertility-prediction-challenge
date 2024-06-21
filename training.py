@@ -14,7 +14,9 @@ from sklearn.compose import make_column_selector as selector
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier,HistGradientBoostingClassifier, VotingClassifier
+
 from sklearn.utils import resample
 import random
 import submission
@@ -71,7 +73,17 @@ def train_save_model(df, target):
     target_balanced = pd.concat((target[target == 0], target_oversampled))
     
 
-    model = make_pipeline(preprocessor, RandomForestClassifier(n_estimators=500))
+    #model = make_pipeline(preprocessor, RandomForestClassifier(n_estimators=500))
+
+    #make an ensemble of classifiers
+    clf1 = make_pipeline(preprocessor, RandomForestClassifier(n_estimators=500))
+    clf2 = make_pipeline(preprocessor, HistGradientBoostingClassifier(max_iter=500))
+    clf3 = make_pipeline(preprocessor, LogisticRegression(max_iter=500))
+    clf4 = make_pipeline(preprocessor, AdaBoostClassifier(n_estimators=500))
+
+    model = VotingClassifier(estimators=[
+        ('rf', clf1), ('histgrad', clf2), ('lr', clf3), ('ab', clf4)], voting='hard')
+
     model.fit(data_balanced, target_balanced)
     
     target_pred = model.predict(data)
