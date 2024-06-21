@@ -60,6 +60,9 @@ def select_features(df):
     df['sdChildrenNum'] = df[fertilityNumRange].std(axis=1)
     df['meanMortalityBelief'] = df[mortalityBeliefRange].mean(axis=1)
     df['sdMortalityBelief'] = df[mortalityBeliefRange].std(axis=1)
+    df['mean_fertilityInt'] = df[fertilityIntRange].mean(axis=1)
+    df['sd_fertilityInt'] = df[fertilityIntRange].std(axis=1)
+
     # drop individual years
     df.drop(columns=variable_selection_drop)
     return(df)
