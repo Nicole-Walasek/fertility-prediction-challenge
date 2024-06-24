@@ -77,19 +77,20 @@ def train_save_model(df, target):
 
     #model = make_pipeline(preprocessor, RandomForestClassifier(n_estimators=500))
     #get weights for the ensemble
-    ensemble_weights = ensemble_weighting.get_weights(preprocessor,data, target)
-    print('ensemble weights: %s' %ensemble_weights)
+    #ensemble_weights = ensemble_weighting.get_weights(preprocessor,data, target)
+    #print('ensemble weights: %s' %ensemble_weights)
 
     #make an ensemble of classifiers
     clf1 = make_pipeline(preprocessor, RandomForestClassifier(n_estimators=500))
     clf2 = make_pipeline(preprocessor, HistGradientBoostingClassifier(max_iter=500))
-    clf3 = make_pipeline(preprocessor, LogisticRegression(max_iter=500))
-    clf4 = make_pipeline(preprocessor, AdaBoostClassifier(n_estimators=500))
-    clf5 = make_pipeline(preprocessor, SVC())
+    # clf3 = make_pipeline(preprocessor, LogisticRegression(max_iter=500))
+    # clf4 = make_pipeline(preprocessor, AdaBoostClassifier(n_estimators=500))
+    # clf5 = make_pipeline(preprocessor, SVC())
 
     model = VotingClassifier(estimators=[
-        ('rf', clf1), ('histgrad', clf2), ('lr', clf3), ('ab', clf4),('SVM', clf5)], voting='hard', weights =ensemble_weights )
+        ('rf', clf1), ('histgrad', clf2)], voting='hard' )
 
+    #, ('lr', clf3), ('ab', clf4),('SVM', clf5)
     model.fit(data_balanced, target_balanced)
     
     target_pred = model.predict(data)
